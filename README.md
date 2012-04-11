@@ -28,6 +28,7 @@ With the file below, 3 documents will be inserted into the 'User' collection and
 
 
 You can also load fixtures as an object where each document is keyed, in case you want to reference another document:
+
     //users.js
     var ObjectId = require('mongodb').BSONNative.ObjectID;
 
