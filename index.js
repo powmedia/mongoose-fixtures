@@ -9,12 +9,19 @@ var fs          = require('fs'),
  * @param {Mixed}       The data to load. This parameter accepts either:
  *                          String: Path to a file or directory to load
  *                          Object: Object literal in the form described above
+ * @param {Connection}  [db] Optionally, the mongoose connection to use.
+ *                          Defaults to mongoose.connection.
  * @param {Function}    Callback
  */
-var load = exports.load = function(data, callback) {
+var load = exports.load = function(data, db, callback) {
+    if (typeof db === 'function') {
+        callback = db;
+        db = mongoose.connection;
+    }
+
     if (typeof data == 'object') {
 
-        loadObject(data, callback);
+        loadObject(data, db, callback);
 
     } else if (typeof data == 'string') {
 
@@ -30,9 +37,9 @@ var load = exports.load = function(data, callback) {
             if (err) throw err;
 
             if (stats.isDirectory()) {
-                loadDir(data, callback);
+                loadDir(data, db, callback);
             } else { //File
-                loadFile(data, callback);
+                loadFile(data, db, callback);
             }
         });
 
@@ -52,16 +59,17 @@ var load = exports.load = function(data, callback) {
  *                          { user1: {name: 'Alex'}, user2: {name: 'Bob'} }
  *                      or:
  *                          [ {name: 'Alex'}, {name:'Bob'} ]
+ * @param {Connection}  The mongoose connection to use
  * @param {Function}    Callback
  */
-function insertCollection(modelName, data, callback) {
+function insertCollection(modelName, data, db, callback) {
     callback = callback || {};
     
     //Counters for managing callbacks
     var tasks = { total: 0, done: 0 };
     
     //Load model
-    var Model = mongoose.model(modelName);
+    var Model = db.model(modelName);
     
     //Clear existing collection
     Model.collection.remove(function(err) {
@@ -104,9 +112,10 @@ function insertCollection(modelName, data, callback) {
  * 
  * @param {Object}      The data to load, keyed by the Mongoose model name e.g.:
  *                          { User: [{name: 'Alex'}, {name: 'Bob'}] }
+ * @param {Connection}  The mongoose connection to use
  * @param {Function}    Callback
  */
-function loadObject(data, callback) {
+function loadObject(data, db, callback) {
     callback = callback || function() {};
     
     //Counters for managing callbacks
@@ -117,7 +126,7 @@ function loadObject(data, callback) {
         (function() {
             tasks.total++;
             
-            insertCollection(modelName, data[modelName], function(err) {
+            insertCollection(modelName, data[modelName], db, function(err) {
                 if (err) throw(err);
                 
                 tasks.done++;
@@ -134,9 +143,10 @@ function loadObject(data, callback) {
  * TODO: Add callback option
  * 
  * @param {String}      The full path to the file to load
+ * @param {Connection}  The mongoose connection to use
  * @param {Function}    Callback
  */
-function loadFile(file, callback) { 
+function loadFile(file, db, callback) { 
     callback = callback || function() {};
     
     if (file.substr(0, 1) !== '/') {
@@ -145,7 +155,7 @@ function loadFile(file, callback) {
         file = parentPath.join('/') + '/' + file;
     }
     
-    load(require(file), callback);
+    load(require(file), db, callback);
 }
 
 
@@ -155,9 +165,10 @@ function loadFile(file, callback) {
  * TODO: Add callback option
  * 
  * @param {String}      The directory path to load e.g. 'data/fixtures' or '../data'
+ * @param {Connection}  The mongoose connection to use
  * @param {Function}    Callback
  */
-function loadDir(dir, callback) {
+function loadDir(dir, db, callback) {
     callback = callback || function() {};
     
     //Get the absolute dir path if a relative path was given
@@ -177,7 +188,7 @@ function loadDir(dir, callback) {
         tasks.total = files.length;
         
         files.forEach(function(file) {
-            loadFile(dir + '/' + file, function(err) {
+            loadFile(dir + '/' + file, db, function(err) {
                 if (err) return callback(err);
                 
                 tasks.done++;
