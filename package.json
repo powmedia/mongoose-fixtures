@@ -36,5 +36,13 @@
     "mongoose": "3.2.x",
     "async": "0.1.x"
   },
+  "devDependencies": {
+    "mocha": "1.6.x",
+    "expect.js": "0.1.x",
+    "mongodb": "1.2.x"
+  },
+  "scripts": {
+    "test": "make test"
+  },
   "main": "mongoose_fixtures.js"
 }

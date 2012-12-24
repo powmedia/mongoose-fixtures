@@ -119,22 +119,11 @@ function insertCollection(modelName, data, db, callback) {
 function loadObject(data, db, callback) {
     callback = callback || function() {};
     
-    //Counters for managing callbacks
-    var tasks = { total: 0, done: 0 };
-    
-    //Go through each model's data
-    for (var modelName in data) {
-        (function() {
-            tasks.total++;
-            
-            insertCollection(modelName, data[modelName], db, function(err) {
-                if (err) throw(err);
-                
-                tasks.done++;
-                if (tasks.done == tasks.total) callback();
-            });
-        })();
-    }
+    var iterator = function(modelName, next){
+        insertCollection(modelName, data[modelName], db, next);
+    };
+
+    async.forEach(data, iterator, callback);
 }
 
 
@@ -186,15 +175,10 @@ function loadDir(dir, db, callback) {
     fs.readdir(dir, function(err, files){
         if (err) return callback(err);
         
-        tasks.total = files.length;
-        
-        files.forEach(function(file) {
-            loadFile(dir + '/' + file, db, function(err) {
-                if (err) return callback(err);
-                
-                tasks.done++;
-                if (tasks.total == tasks.done) callback();
-            });
-        });
+        var iterator = function(file, next){
+            loadFile(dir + '/' + file, db, next);
+        };
+
+        async.forEach(files, iterator, callback);
     });
 };
