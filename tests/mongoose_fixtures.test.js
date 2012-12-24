@@ -1,11 +1,12 @@
 
 require("coffee-script");
+
 var async = require('async');
 var path = require('path');
 var expect = require('expect.js');
 var mongoose = require('mongoose');
 var fixturesLoader = require('../mongoose_fixtures');
-var MongooseInitializer =  require('openifyit-commons').MongooseInitializer;
+var MongooseInitializer = require('openifyit-commons').MongooseInitializer;
 
 describe('mongoose-fixtures test', function(){
     before(function(done){
@@ -23,6 +24,17 @@ describe('mongoose-fixtures test', function(){
     });
 
     it('should load fixtures from a directory', function(done){
-        done();
+        fixturesLoader.load('./fixtures', function(err){
+            expect(err).not.to.be.ok();
+            var CountrySchema = mongoose.connection.model('Country');
+            CountrySchema.find({}, function(err, countries){
+                expect(err).not.to.be.ok();
+                console.log(countries);
+                expect(countries).to.be.ok();
+                expect(countries).to.be.an(Array);
+                expect(countries.length).to.be.eql(2);
+                done();
+            });
+        });
     });
 });

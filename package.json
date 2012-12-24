@@ -40,7 +40,8 @@
     "mocha": "1.6.x",
     "expect.js": "0.1.x",
     "commons": "git://github.com/OpenifyIt/commons.git",
-    "coffee-script": "1.4.x"
+    "coffee-script": "1.4.x",
+    "mongodb": "1.2.x"
   },
   "scripts": {
     "test": "make test"
