@@ -10,8 +10,8 @@ countries.push country1
 
 country2 =
     _id: new ObjectID(),
-    countryCode: "CA",
-    countryName: "Canada",
+    countryCode: "SE",
+    countryName: "Sweden",
 countries.push country2
 
 module.exports.Country = countries
