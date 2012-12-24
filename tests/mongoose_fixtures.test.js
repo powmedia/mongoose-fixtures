@@ -29,7 +29,35 @@ describe('mongoose-fixtures test', function(){
             var CountrySchema = mongoose.connection.model('Country');
             CountrySchema.find({}, function(err, countries){
                 expect(err).not.to.be.ok();
-                console.log(countries);
+                expect(countries).to.be.ok();
+                expect(countries).to.be.an(Array);
+                expect(countries.length).to.be.eql(2);
+                done();
+            });
+        });
+    });
+
+    it('should load fixtures from a file', function(done){
+        fixturesLoader.load('./fixtures/countries.coffee', function(err){
+            expect(err).not.to.be.ok();
+            var CountrySchema = mongoose.connection.model('Country');
+            CountrySchema.find({}, function(err, countries){
+                expect(err).not.to.be.ok();
+                expect(countries).to.be.ok();
+                expect(countries).to.be.an(Array);
+                expect(countries.length).to.be.eql(2);
+                done();
+            });
+        });
+    });
+
+    it('should load fixtures from an object', function(done){
+        var data = require('./fixtures/countries');
+        fixturesLoader.load(data, function(err){
+            expect(err).not.to.be.ok();
+            var CountrySchema = mongoose.connection.model('Country');
+            CountrySchema.find({}, function(err, countries){
+                expect(err).not.to.be.ok();
                 expect(countries).to.be.ok();
                 expect(countries).to.be.an(Array);
                 expect(countries.length).to.be.eql(2);
