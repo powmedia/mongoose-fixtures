@@ -1,6 +1,7 @@
 //Dependencies
-var fs          = require('fs'),
-    mongoose    = require('mongoose');
+var fs          = require('fs');
+var mongoose    = require('mongoose');
+var async       = require('async');
     
 
 /**

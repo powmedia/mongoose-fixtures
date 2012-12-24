@@ -1,24 +1,40 @@
-{ "name": "mongoose-fixtures"
-, "description": "Fixture loading for Mongoose on NodeJS"
-, "maintainers":
-  [ { "name": "Charles Davison"
-    , "url": "https://github.com/powmedia"
+
+{ 
+  "name": "mongoose-fixtures",
+  "description": "Fixture loading for Mongoose on NodeJS",
+  "maintainers":[
+    { 
+      "name": "Charles Davison",
+      "url": "https://github.com/powmedia"
     }
-  ]
-, "contributors" :
-  [ { "name": "Charles Davison"
-    , "url": "https://github.com/powmedia"
+  ],
+  "contributors":[
+    {
+      "name": "Charles Davison",
+      "url": "https://github.com/powmedia"
+    },
+    {
+      "name": "Jacques-Olivier D. Bernier",
+      "url": "https://github.com/jackdbernier"
     }
-  ]
-, "version": "0.1.0"
-, "repository" :
-  { "type" : "git"
-  , "url" : "http://github.com/powmedia/mongoose-fixtures.git"
-  }
-, "bugs" : { "url" : "http://github.com/powmedia/mongoose-fixtures/issues" }
-, "licenses" :
-  [ { "type" : "MIT"
-    , "url" : "http://github.com/powmedia/mongoose-fixtures/raw/master/LICENSE"
+  ],
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/powmedia/mongoose-fixtures.git"
+  },
+  "bugs": { 
+    "url": "http://github.com/powmedia/mongoose-fixtures/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/powmedia/mongoose-fixtures/raw/master/LICENSE"
     }
-  ]
+  ],
+  "dependencies": {
+    "mongoose": "3.2.x",
+    "async": "0.1.x"
+  },
+  "main": "mongoose_fixtures.js"
 }
