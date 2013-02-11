@@ -48,7 +48,7 @@ You can also load fixtures as an object where each document is keyed, in case yo
 Usage
 -----
 
-    var fixtures = require('fixtures');
+    var fixtures = require('pow-mongoose-fixtures');
     
     //Objects
     fixtures.load({
@@ -67,7 +67,4 @@ Usage
 Installation
 ------------
 
-Clone / download from [github](https://github.com/powmedia/mongoose-fixtures),
-and then require in your project:
-
-    var fixtures = require('./lib/mongoose-fixtures');
+    npm install pow-mongoose-fixtures
