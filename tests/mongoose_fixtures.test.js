@@ -46,6 +46,10 @@ describe('mongoose-fixtures test', function(){
                 expect(countries).to.be.ok();
                 expect(countries).to.be.an(Array);
                 expect(countries.length).to.be.eql(2);
+	        expect(fixturesLoader.fixtures).to.be.ok();
+	        expect (fixturesLoader.fixtures.Country).to.be.ok();
+	        expect (fixturesLoader.fixtures.Country.country1).to.be.ok();
+	        expect (fixturesLoader.fixtures.Country.country1.countryCode).to.be.ok();	
                 done();
             });
         });

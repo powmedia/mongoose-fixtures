@@ -2,7 +2,7 @@
 var fs          = require('fs');
 var mongoose    = require('mongoose');
 var async       = require('async');
-    
+var fixtures = exports.fixtures	= {};
 
 /**
  * Clears a collection and inserts the given data as new documents
@@ -85,7 +85,6 @@ function insertCollection(modelName, data, db, callback) {
                 items.push(data[i]);
             }
         }
-        
         //Check number of tasks to run
         if (items.length == 0) {
             return callback();
@@ -118,10 +117,13 @@ function insertCollection(modelName, data, db, callback) {
  */
 function loadObject(data, db, callback) {
     callback = callback || function() {};
+
     var iterator = function(modelName, next){
+	    fixtures[modelName] = data[modelName];
         insertCollection(modelName, data[modelName], db, next);
     };
-    async.forEach(data, iterator, callback);
+    async.forEach (Object.getOwnPropertyNames(data), iterator, callback);
+
 }
 
 
@@ -136,13 +138,14 @@ function loadObject(data, db, callback) {
  */
 function loadFile(file, db, callback) { 
     callback = callback || function() {};
-    
+
+
     if (file.substr(0, 1) !== '/') {
         var parentPath = module.parent.filename.split('/');
         parentPath.pop();
         file = parentPath.join('/') + '/' + file;
     }
-    
+
     load(require(file), db, callback);
 }
 
