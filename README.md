@@ -63,6 +63,22 @@ Usage
 
     //Directories (loads all files in the directory)
     fixtures.load(__dirname + '/fixtures');
+    
+    //You can use patterns to match files
+    //this match all, excluding all index.*
+    fixturesLoader.load('./fixtures/!(index.*)(.*)');
+    
+    //This match /fixture/user/* and /fixture/user/*
+    fixture.load('./fixtures/{user,blog}/*.js');
+    
+See:
+
+* `man sh`
+* `man bash`
+* `man 3 fnmatch`
+* `man 5 gitignore`
+* [node-glob](https://github.com/isaacs/node-glob)
+* [minimatch documentation](https://github.com/isaacs/minimatch)
 
 Installation
 ------------
