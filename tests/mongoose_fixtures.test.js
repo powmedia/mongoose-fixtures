@@ -10,7 +10,9 @@ var MongooseInitializer = require('openifyit-commons').MongooseInitializer;
 
 describe('mongoose-fixtures test', function(){
     before(function(done){
+        // @todo Fix connection and model loader
         mongoose.connect(process.env.MONGODB_URL);
+        require('./models/client');
         require('./models/country.coffee');
         done();
         
@@ -65,6 +67,21 @@ describe('mongoose-fixtures test', function(){
                 expect(countries).to.be.ok();
                 expect(countries).to.be.an(Array);
                 expect(countries.length).to.be.eql(2);
+                done();
+            });
+        });
+    });
+
+    it('should load fixtures from glob pattern', function(done){
+        var pattern = './fixtures/globfolder/!(index.*)(.*)';
+        fixturesLoader.load(pattern, function(err){
+            expect(err).not.to.be.ok();
+            var ClientSchema = mongoose.connection.model('Client');
+            ClientSchema.find({}, function(err, clients){
+                expect(err).not.to.be.ok();
+                expect(clients).to.be.ok();
+                expect(clients).to.be.an(Array);
+                expect(clients.length).to.be.eql(1);
                 done();
             });
         });
