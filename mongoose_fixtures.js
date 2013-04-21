@@ -132,7 +132,7 @@ function loadFiles(data, db, callback) {
     if (err) return callback(err);
 
     var iterator = function(file, next) {
-        load(require(file), db, callback);
+        load(require(file), db, next);
     };
     async.forEach(files, iterator, callback);
   });

@@ -29,7 +29,6 @@ describe('mongoose-fixtures test', function(){
 
     it('should load fixtures from a directory', function(done){
         fixturesLoader.load('./fixtures', function(err){
-            console.log(err)
             expect(err).not.to.be.ok();
             var CountrySchema = mongoose.connection.model('Country');
             CountrySchema.find({}, function(err, countries){
