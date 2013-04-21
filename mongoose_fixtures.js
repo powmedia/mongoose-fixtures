@@ -2,6 +2,8 @@
 var fs          = require('fs');
 var mongoose    = require('mongoose');
 var async       = require('async');
+var path        = require('path');
+var glob        = require('glob');
     
 
 /**
@@ -26,23 +28,7 @@ var load = exports.load = function(data, db, callback) {
 
     } else if (typeof data == 'string') {
 
-        //Get the absolute dir path if a relative path was given
-        if (data.substr(0, 1) !== '/') {
-            var parentPath = module.parent.filename.split('/');
-            parentPath.pop();
-            data = parentPath.join('/') + '/' + data;
-        }
-
-        //Determine if data is pointing to a file or directory
-        fs.stat(data, function(err, stats) {
-            if (err) throw err;
-
-            if (stats.isDirectory()) {
-                loadDir(data, db, callback);
-            } else { //File
-                loadFile(data, db, callback);
-            }
-        });
+        loadFiles(data, db, callback);
 
     } else { //Unsupported type
 
@@ -124,31 +110,8 @@ function loadObject(data, db, callback) {
     async.forEach(Object.keys(data), iterator, callback);
 }
 
-
 /**
- * Loads fixtures from one file
- * 
- * TODO: Add callback option
- * 
- * @param {String}      The full path to the file to load
- * @param {Connection}  The mongoose connection to use
- * @param {Function}    Callback
- */
-function loadFile(file, db, callback) { 
-    callback = callback || function() {};
-    
-    if (file.substr(0, 1) !== '/') {
-        var parentPath = module.parent.filename.split('/');
-        parentPath.pop();
-        file = parentPath.join('/') + '/' + file;
-    }
-    
-    load(require(file), db, callback);
-}
-
-
-/**
- * Loads fixtures from all files in a directory
+ * Loads fixtures from matches of glob search filesystem pattern
  * 
  * TODO: Add callback option
  * 
@@ -156,23 +119,21 @@ function loadFile(file, db, callback) {
  * @param {Connection}  The mongoose connection to use
  * @param {Function}    Callback
  */
-function loadDir(dir, db, callback) {
-    callback = callback || function() {};
-    
-    //Get the absolute dir path if a relative path was given
-    if (dir.substr(0, 1) !== '/') {
-        var parentPath = module.parent.filename.split('/');
-        parentPath.pop();
-        dir = parentPath.join('/') + '/' + dir;
-    }
-    
-    //Load each file in directory
-    fs.readdir(dir, function(err, files){
-        if (err) return callback(err);
-        
-        var iterator = function(file, next){
-            loadFile(dir + '/' + file, db, next);
-        };
-        async.forEach(files, iterator, callback);
-    });
+function loadFiles(data, db, callback) {
+  var __cwd = module.parent.filename.split('/');
+  __cwd.pop();
+  __cwd = __cwd.join('/');
+
+  data = path.join(__cwd, data);
+  if (!/\*|\.js*/.test(data))
+    data = data + '/*';
+
+  glob(data, { cwd: __cwd }, function(err, files) {
+    if (err) return callback(err);
+
+    var iterator = function(file, next) {
+        load(require(file), db, callback);
+    };
+    async.forEach(files, iterator, callback);
+  });
 };
