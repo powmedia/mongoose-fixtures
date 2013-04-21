@@ -4,7 +4,7 @@ var mongoose    = require('mongoose');
 var async       = require('async');
 var path        = require('path');
 var glob        = require('glob');
-    
+
 
 /**
  * Clears a collection and inserts the given data as new documents
@@ -37,7 +37,7 @@ var load = exports.load = function(data, db, callback) {
     }
 }
 
-    
+
 /**
  * Clears a collection and inserts the given data as new documents
  *
@@ -51,17 +51,14 @@ var load = exports.load = function(data, db, callback) {
  */
 function insertCollection(modelName, data, db, callback) {
     callback = callback || {};
-    
-    //Counters for managing callbacks
-    var tasks = { total: 0, done: 0 };
-    
+
     //Load model
     var Model = db.model(modelName);
-    
+
     //Clear existing collection
     Model.collection.remove(function(err) {
         if (err) return callback(err);
-        
+
         //Convert object to array
         var items = [];
         if (Array.isArray(data)) {
@@ -71,24 +68,29 @@ function insertCollection(modelName, data, db, callback) {
                 items.push(data[i]);
             }
         }
-        
+
         //Check number of tasks to run
         if (items.length == 0) {
             return callback();
-        } else {
-            tasks.total = items.length;
         }
-        
-        //Insert each item individually so we get Mongoose validation etc.
-        items.forEach(function(item) {                       
+
+        var iterator = function(item, next) {
             var doc = new Model(item);
-            doc.save(function(err) {
-                if (err) return callback(err);
-                
-                //Check if task queue is complete
-                tasks.done++;
-                if (tasks.done == tasks.total) callback();
-            });
+            //Insert each item individually so we get Mongoose validation etc.
+            doc.save(function (err) {
+                if (err) {
+                    //Or Fallback Deep insert
+                    Model.collection.insert(doc.toObject(), function (err, res) {
+                        if (err) return next(err);
+                        next();
+                    });
+                }
+                else
+                    next();
+            })
+        };
+        async.forEach(items, iterator, function (){
+            callback();
         });
     });
 }
@@ -96,7 +98,7 @@ function insertCollection(modelName, data, db, callback) {
 
 /**
  * Loads fixtures from object data
- * 
+ *
  * @param {Object}      The data to load, keyed by the Mongoose model name e.g.:
  *                          { User: [{name: 'Alex'}, {name: 'Bob'}] }
  * @param {Connection}  The mongoose connection to use
@@ -112,9 +114,9 @@ function loadObject(data, db, callback) {
 
 /**
  * Loads fixtures from matches of glob search filesystem pattern
- * 
+ *
  * TODO: Add callback option
- * 
+ *
  * @param {String}      The directory path to load e.g. 'data/fixtures' or '../data'
  * @param {Connection}  The mongoose connection to use
  * @param {Function}    Callback
