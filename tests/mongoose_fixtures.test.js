@@ -13,6 +13,7 @@ describe('mongoose-fixtures test', function(){
         // @todo Fix connection and model loader
         mongoose.connect(process.env.MONGODB_URL);
         require('./models/client');
+        require('./models/paranoid');
         require('./models/country.coffee');
         done();
         
@@ -82,6 +83,21 @@ describe('mongoose-fixtures test', function(){
                 expect(clients).to.be.ok();
                 expect(clients).to.be.an(Array);
                 expect(clients.length).to.be.eql(1);
+                done();
+            });
+        });
+    });
+
+    it('should load fixtures from a paranid model', function(done){
+        var pattern = './fixtures/paranoidhooks/paranoids.js';
+        fixturesLoader.load(pattern, function(err){
+            expect(err).not.to.be.ok();
+            var ParanoidSchema = mongoose.connection.model('Paranoid');
+            ParanoidSchema.find({}, function(err, paranoids){
+                expect(err).not.to.be.ok();
+                expect(paranoids).to.be.ok();
+                expect(paranoids).to.be.an(Array);
+                expect(paranoids.length).to.be.eql(1);
                 done();
             });
         });

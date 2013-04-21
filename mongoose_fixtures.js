@@ -127,8 +127,8 @@ function loadFiles(data, db, callback) {
   __cwd = __cwd.join('/');
 
   data = path.join(__cwd, data);
-  if (!/\*|\.js*/.test(data))
-    data = data + '/*';
+  if (!/(\/\.\*|\.js*)$/.test(data))
+    data = data + '/.*';
 
   glob(data, { cwd: __cwd }, function(err, files) {
     if (err) return callback(err);
