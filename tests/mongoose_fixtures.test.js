@@ -74,7 +74,7 @@ describe('mongoose-fixtures test', function(){
     });
 
     it('should load fixtures from glob pattern', function(done){
-        var pattern = './fixtures/globfolder/!(index.*)(.*)';
+        var pattern = './fixtures/globfolder/!(index.*)(*.*)';
         fixturesLoader.load(pattern, function(err){
             expect(err).not.to.be.ok();
             var ClientSchema = mongoose.connection.model('Client');
