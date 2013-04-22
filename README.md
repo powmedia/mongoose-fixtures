@@ -1,4 +1,4 @@
-mongoose-fixtures
+mongoose-fixtures [![Build Status](https://travis-ci.org/joaoneto/mongoose-fixtures.png?branch=master)](https://travis-ci.org/joaoneto/mongoose-fixtures)
 =================
 
 Simple fixture loader for Mongoose on NodeJS.
