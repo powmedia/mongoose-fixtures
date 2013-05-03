@@ -2,7 +2,9 @@
 var fs          = require('fs');
 var mongoose    = require('mongoose');
 var async       = require('async');
-    
+var path        = require('path');
+var glob        = require('glob');
+
 
 /**
  * Clears a collection and inserts the given data as new documents
@@ -18,6 +20,8 @@ var load = exports.load = function(data, db, callback) {
     if (typeof db === 'function') {
         callback = db;
         db = mongoose.connection;
+    } else {
+      db = db || mongoose.connection;
     }
 
     if (typeof data == 'object') {
@@ -26,23 +30,7 @@ var load = exports.load = function(data, db, callback) {
 
     } else if (typeof data == 'string') {
 
-        //Get the absolute dir path if a relative path was given
-        if (data.substr(0, 1) !== '/') {
-            var parentPath = module.parent.filename.split('/');
-            parentPath.pop();
-            data = parentPath.join('/') + '/' + data;
-        }
-
-        //Determine if data is pointing to a file or directory
-        fs.stat(data, function(err, stats) {
-            if (err) throw err;
-
-            if (stats.isDirectory()) {
-                loadDir(data, db, callback);
-            } else { //File
-                loadFile(data, db, callback);
-            }
-        });
+        loadFiles(data, db, callback);
 
     } else { //Unsupported type
 
@@ -51,7 +39,7 @@ var load = exports.load = function(data, db, callback) {
     }
 }
 
-    
+
 /**
  * Clears a collection and inserts the given data as new documents
  *
@@ -65,17 +53,14 @@ var load = exports.load = function(data, db, callback) {
  */
 function insertCollection(modelName, data, db, callback) {
     callback = callback || {};
-    
-    //Counters for managing callbacks
-    var tasks = { total: 0, done: 0 };
-    
+
     //Load model
     var Model = db.model(modelName);
-    
+
     //Clear existing collection
     Model.collection.remove(function(err) {
         if (err) return callback(err);
-        
+
         //Convert object to array
         var items = [];
         if (Array.isArray(data)) {
@@ -85,24 +70,29 @@ function insertCollection(modelName, data, db, callback) {
                 items.push(data[i]);
             }
         }
-        
+
         //Check number of tasks to run
         if (items.length == 0) {
             return callback();
-        } else {
-            tasks.total = items.length;
         }
-        
-        //Insert each item individually so we get Mongoose validation etc.
-        items.forEach(function(item) {                       
+
+        var iterator = function(item, next) {
             var doc = new Model(item);
-            doc.save(function(err) {
-                if (err) return callback(err);
-                
-                //Check if task queue is complete
-                tasks.done++;
-                if (tasks.done == tasks.total) callback();
-            });
+            //Insert each item individually so we get Mongoose validation etc.
+            doc.save(function (err) {
+                if (err) {
+                    //Or Fallback Deep insert
+                    Model.collection.insert(doc.toObject(), function (err, res) {
+                        if (err) return next(err);
+                        next();
+                    });
+                }
+                else
+                    next();
+            })
+        };
+        async.forEach(items, iterator, function (){
+            callback();
         });
     });
 }
@@ -110,7 +100,7 @@ function insertCollection(modelName, data, db, callback) {
 
 /**
  * Loads fixtures from object data
- * 
+ *
  * @param {Object}      The data to load, keyed by the Mongoose model name e.g.:
  *                          { User: [{name: 'Alex'}, {name: 'Bob'}] }
  * @param {Connection}  The mongoose connection to use
@@ -124,55 +114,31 @@ function loadObject(data, db, callback) {
     async.forEach(Object.keys(data), iterator, callback);
 }
 
-
 /**
- * Loads fixtures from one file
- * 
+ * Loads fixtures from matches of glob search filesystem pattern
+ *
  * TODO: Add callback option
- * 
- * @param {String}      The full path to the file to load
- * @param {Connection}  The mongoose connection to use
- * @param {Function}    Callback
- */
-function loadFile(file, db, callback) { 
-    callback = callback || function() {};
-    
-    if (file.substr(0, 1) !== '/') {
-        var parentPath = module.parent.filename.split('/');
-        parentPath.pop();
-        file = parentPath.join('/') + '/' + file;
-    }
-    
-    load(require(file), db, callback);
-}
-
-
-/**
- * Loads fixtures from all files in a directory
- * 
- * TODO: Add callback option
- * 
+ *
  * @param {String}      The directory path to load e.g. 'data/fixtures' or '../data'
  * @param {Connection}  The mongoose connection to use
  * @param {Function}    Callback
  */
-function loadDir(dir, db, callback) {
-    callback = callback || function() {};
-    
-    //Get the absolute dir path if a relative path was given
-    if (dir.substr(0, 1) !== '/') {
-        var parentPath = module.parent.filename.split('/');
-        parentPath.pop();
-        dir = parentPath.join('/') + '/' + dir;
-    }
-    
-    //Load each file in directory
-    fs.readdir(dir, function(err, files){
-        if (err) return callback(err);
-        
-        var iterator = function(file, next){
-            loadFile(dir + '/' + file, db, next);
-        };
-        async.forEach(files, iterator, callback);
-    });
+function loadFiles(data, db, callback) {
+  callback = callback || function() {};
+  var __cwd = module.parent.filename.split('/');
+  __cwd.pop();
+  __cwd = __cwd.join('/');
+
+  data = path.join(__cwd, data);
+  if (!/(\..*|\/\.\*|\.js*)$|[\(\)\!]/.test(data))
+    data = data + '/*.*';
+
+  glob(data, { cwd: __cwd }, function(err, files) {
+    if (err) return callback(err);
+
+    var iterator = function(file, next) {
+        load(require(file), db, next);
+    };
+    async.forEach(files, iterator, callback);
+  });
 };
