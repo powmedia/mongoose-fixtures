@@ -20,6 +20,8 @@ var load = exports.load = function(data, db, callback) {
     if (typeof db === 'function') {
         callback = db;
         db = mongoose.connection;
+    } else {
+      db = db || mongoose.connection;
     }
 
     if (typeof data == 'object') {
@@ -122,6 +124,7 @@ function loadObject(data, db, callback) {
  * @param {Function}    Callback
  */
 function loadFiles(data, db, callback) {
+  callback = callback || function() {};
   var __cwd = module.parent.filename.split('/');
   __cwd.pop();
   __cwd = __cwd.join('/');
