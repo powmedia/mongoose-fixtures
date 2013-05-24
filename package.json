@@ -1,6 +1,6 @@
 
 { 
-  "name": "mongoose-fixtures",
+  "name": "pow-mongoose-fixtures",
   "description": "Fixture loading for Mongoose on NodeJS",
   "maintainers":[
     { 
@@ -18,7 +18,7 @@
       "url": "https://github.com/jackdbernier"
     }
   ],
-  "version": "0.1.0",
+  "version": "0.3.0",
   "repository": {
     "type": "git",
     "url": "http://github.com/powmedia/mongoose-fixtures.git"
