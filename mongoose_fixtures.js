@@ -121,7 +121,7 @@ function loadObject(data, db, callback) {
     var iterator = function(modelName, next){
         insertCollection(modelName, data[modelName], db, next);
     };
-    async.forEach(Object.keys(data), iterator, callback);
+    async.forEachSeries(Object.keys(data), iterator, callback);
 }
 
 
