@@ -18,7 +18,7 @@
       "url": "https://github.com/jackdbernier"
     }
   ],
-  "version": "0.3.0",
+  "version": "0.3.1",
   "repository": {
     "type": "git",
     "url": "http://github.com/powmedia/mongoose-fixtures.git"
