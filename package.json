@@ -33,14 +33,14 @@
     }
   ],
   "dependencies": {
-    "mongoose": "3.2.x",
-    "async": "0.1.x"
+    "mongoose": "3.8.x",
+    "async": "0.9.x"
   },
   "devDependencies": {
     "mocha": "1.6.x",
     "expect.js": "0.1.x",
     "coffee-script": "1.4.x",
-    "mongodb": "1.2.x"
+    "mongodb": "1.4.x"
   },
   "scripts": {
     "test": "make test"
