@@ -3,7 +3,7 @@ mongoose-fixtures
 
 Simple fixture loader for Mongoose on NodeJS.
 
-Fixtures can be in one file, or divided up into separate files for organisation 
+Fixtures can be in one file, or divided up into separate files for organisation
 (e.g. one file per model)
 
 The fixture files must export objects which are keyed by the Mongoose model name, each
@@ -47,22 +47,23 @@ You can also load fixtures as an object where each document is keyed, in case yo
 
 Usage
 -----
-
+    var mongoose = require('mongoose');
+    mongoose.connect('mongodb://localhost/my_database');
     var fixtures = require('pow-mongoose-fixtures');
-    
+
     //Objects
     fixtures.load({
         User: [
             { name: 'Maeby' },
             { name: 'George Michael' }
         ]
-    });
+    },mongoose,function(err){});
 
     //Files
-    fixtures.load(__dirname + '/fixtures/users.js');
+    fixtures.load(__dirname + '/fixtures/users.js',mongoose,function(err){});
 
     //Directories (loads all files in the directory)
-    fixtures.load(__dirname + '/fixtures');
+    fixtures.load(__dirname + '/fixtures',mongoose,function(err){});
 
 Installation
 ------------
