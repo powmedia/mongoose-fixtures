@@ -67,4 +67,4 @@ Usage
 Installation
 ------------
 
-    npm install pow-mongoose-fixtures
+    npm install pow-mongoose-fixtures --save-dev
