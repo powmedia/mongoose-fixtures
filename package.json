@@ -1,9 +1,9 @@
 
-{ 
+{
   "name": "pow-mongoose-fixtures",
   "description": "Fixture loading for Mongoose on NodeJS",
   "maintainers":[
-    { 
+    {
       "name": "Charles Davison",
       "url": "https://github.com/powmedia"
     }
@@ -23,7 +23,7 @@
     "type": "git",
     "url": "http://github.com/powmedia/mongoose-fixtures.git"
   },
-  "bugs": { 
+  "bugs": {
     "url": "http://github.com/powmedia/mongoose-fixtures/issues"
   },
   "licenses": [
@@ -33,15 +33,14 @@
     }
   ],
   "dependencies": {
-    "mongoose": "3.2.x",
-    "async": "0.1.x"
+    "mongoose": "3.8.x",
+    "async": "0.9.x"
   },
   "devDependencies": {
     "mocha": "1.6.x",
     "expect.js": "0.1.x",
-    "commons": "git://github.com/OpenifyIt/commons.git",
     "coffee-script": "1.4.x",
-    "mongodb": "1.2.x"
+    "mongodb": "1.4.x"
   },
   "scripts": {
     "test": "make test"
