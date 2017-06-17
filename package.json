@@ -33,7 +33,7 @@
     }
   ],
   "dependencies": {
-    "mongoose": "4.0.x",
+    "mongoose": "4.10.2",
     "async": "0.1.x"
   },
   "devDependencies": {
