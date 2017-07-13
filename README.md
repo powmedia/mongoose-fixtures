@@ -59,10 +59,10 @@ Usage
     });
 
     //Files
-    fixtures.load(__dirname + '/fixtures/users.js');
+    fixtures.load(__dirname + '/fixtures/users.js', callback);
 
     //Directories (loads all files in the directory)
-    fixtures.load(__dirname + '/fixtures');
+    fixtures.load(__dirname + '/fixtures', callback);
 
 Installation
 ------------
