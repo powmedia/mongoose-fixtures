@@ -73,7 +73,7 @@ function insertCollection(modelName, data, db, callback) {
     var Model = db.model(modelName);
     
     //Clear existing collection
-    Model.collection.remove(function(err) {
+    Model.collection.deleteMany(function(err) {
         if (err) return callback(err);
         
         //Convert object to array
